@@ -1,7 +1,5 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-import portscanner
-import url2img
 
 import uuid
 import logging
@@ -17,7 +15,12 @@ load_dotenv()
 today = datetime.date.today()
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
+os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)
+os.makedirs(LOG_PATH, exist_ok=True)
 logging.basicConfig(filename=f"{LOG_PATH}/{today}.log", level=logging.INFO)
+
+import portscanner
+import url2img
 
 app = FastAPI()
 
