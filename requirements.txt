@@ -1,0 +1,6 @@
+xmltodict
+python-dotenv
+fastapi
+uvicorn
+selenium
+chromedriver_binary
