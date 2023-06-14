@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import uuid
 import logging
 
+
 import datetime
 
 from concurrent.futures import ThreadPoolExecutor
@@ -13,12 +14,19 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
 os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)
 os.makedirs(LOG_PATH, exist_ok=True)
-logging.basicConfig(filename=f"{LOG_PATH}/{now}.log", level=logging.INFO)
+
+logger = logging.getLogger("portscanner")
+logger.setLevel("INFO")
+
+now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
+fh = logging.FileHandler(f"{LOG_PATH}/{now}.log")
+
+logger.addHandler(fh)
+
 
 import portscanner
 import url2img
@@ -45,7 +53,7 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
     }
     """
     try:
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()}[main:scan_ports] Received a scan request from {request.client.host} to {ip}:{(str(dict(ports))) if ports else ''}"
         )
         if ports:
@@ -75,23 +83,23 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
                     "screenshot_uuid"
                 ] = img_uuid
 
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()}[main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
         )
         return open_ports
     except Exception as e:
-        logging.error(f"{datetime.datetime.now()}[main:scan_ports] {e}")
+        logger.error(f"{datetime.datetime.now()}[main:scan_ports] {e}")
         return []
 
 
 @app.get("/getimg")
 def getimg(request: Request, img_uuid: str):
-    logging.info(f"{datetime.datetime.now()}[main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
+    logger.info(f"{datetime.datetime.now()}[main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
     img_path = f"{SCREENSHOT_SAVE_PATH}/{img_uuid}.png"
     if not os.path.exists(img_path):
-        logging.warning(f"{datetime.datetime.now()}[main:getimg] {img_uuid} was not found")
+        logger.warning(f"{datetime.datetime.now()}[main:getimg] {img_uuid} was not found")
         return None
     response = FileResponse(img_path, filename=f"{img_uuid}.png")
-    logging.info(f"{datetime.datetime.now()}[main:getimg] Send {img_uuid}.png")
+    logger.info(f"{datetime.datetime.now()}[main:getimg] Send {img_uuid}.png")
     return response
 

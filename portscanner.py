@@ -8,13 +8,15 @@ import datetime
 import os
 from dotenv import load_dotenv
 
+import logging
+
 load_dotenv()
-now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
-os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)
-os.makedirs(LOG_PATH, exist_ok=True)
-logging.basicConfig(filename=f"{LOG_PATH}/{now}.log", level=logging.INFO)
+
+logger = logging.getLogger("portscanner")
+logger.setLevel("INFO")
+
 
 
 def scan_ports(
@@ -51,8 +53,8 @@ def scan_ports(
     },
 ):
     try:
-        logging.info(f"{datetime.datetime.now()}[portscanner] start a portscan to {ip}")
-        logging.debug(
+        logger.info(f"{datetime.datetime.now()}[portscanner] start a portscan to {ip}")
+        logger.debug(
             f"{datetime.datetime.now()}[portscanner] Scan will be held at {ports}"
         )
         sr = _nmap([ip], ports)
@@ -63,14 +65,14 @@ def scan_ports(
             if p["state"]["@state"] == "open"
         ]
 
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()}[portscanner] {ip} has open ports {str(sr_ports)}"
         )
 
         return sr_ports
 
     except KeyError as ke:
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()}[portscanner] {ip} has no open ports available"
         )
         return []

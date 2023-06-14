@@ -13,12 +13,14 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 from dotenv import load_dotenv
 
-now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
+import logging
+
+load_dotenv()
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
-os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)
-os.makedirs(LOG_PATH, exist_ok=True)
-logging.basicConfig(filename=f"{LOG_PATH}/{now}.log", level=logging.INFO)
+
+logger = logging.getLogger("portscanner")
+logger.setLevel("INFO")
 
 
 options = webdriver.ChromeOptions()
@@ -41,49 +43,49 @@ options.page_load_strategy = "eager"
 def _url2img(url, fname):
     driver = webdriver.Chrome(options=options)
     driver.set_window_size(720, 480)
-    logging.debug(
+    logger.debug(
         f"{datetime.datetime.now()} [url2img] started chrome webdriver with options: {options}"
     )
     try:
         if not url.startswith("http") and not url.startswith("https"):
-            logging.info(f"{datetime.datetime.now()} [url2img] complement url")
+            logger.info(f"{datetime.datetime.now()} [url2img] complement url")
             query_url = "http://" + url
         else:
             query_url = url
 
-        logging.info(f"{datetime.datetime.now()} [url2img] GET {query_url}")
+        logger.info(f"{datetime.datetime.now()} [url2img] GET {query_url}")
         driver.get(query_url)
         driver.execute_script("document.body.style.zoom= '50%';")
 
-        logging.info(f"{datetime.datetime.now()} [url2img] waiting 10 seconds....")
+        logger.info(f"{datetime.datetime.now()} [url2img] waiting 10 seconds....")
         time.sleep(10)
         # if the page is blank, return false
         if (
             driver.page_source
             == '<html><head></head><body style="zoom: 50%;"></body></html>'
         ):
-            logging.info(
+            logger.info(
                 f"{datetime.datetime.now()} [url2img] {query_url} was a blank page. skipped."
             )
             return False
         savepath = f"{SCREENSHOT_SAVE_PATH}/{fname}.png"
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()} [url2img] save the screenshot of {query_url} as {savepath}"
         )
         driver.save_screenshot(savepath)
         return True
     except InvalidArgumentException as iae:
         # print("\n\033[31m URL may be incorrect\033[0m")
-        logging.error(f"{datetime.datetime.now()} [url2img] URL may be incorrect.")
+        logger.error(f"{datetime.datetime.now()} [url2img] URL may be incorrect.")
         return False
     except WebDriverException as wde:
         # print("\n\033[31m URL doesn't have any web interface \033[0m")
-        logging.info(
+        logger.info(
             f"{datetime.datetime.now()} [url2img] {url} doesn't have any web interface."
         )
         return False
     except Exception as e:
-        logging.error(f"{datetime.datetime.now()} [url2img] {e}")
+        logger.error(f"{datetime.datetime.now()} [url2img] {e}")
         return False
 
 
@@ -123,5 +125,5 @@ def url2img(url: Union[str, list], fname: Union[str, list]) -> dict:
                         )
             return futures
         except Exception as e:
-            logging.error(f"{datetime.datetime.now()} [url2img] {e}")
+            logger.error(f"{datetime.datetime.now()} [url2img] {e}")
             return {"": False}
