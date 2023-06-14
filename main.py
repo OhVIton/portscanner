@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 import uuid
@@ -84,6 +85,10 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
 
 
 @app.get("/getimg")
-def getimg(path: str):
-    pass
+def getimg(img_uuid: str):
+    img_path = f"{SCREENSHOT_SAVE_PATH}/{img_uuid}.png"
+    if not os.path.exists(img_path):
+        return None
+    response = FileResponse(img_path, filename=f"{img_uuid}.png")
+    return response
 
