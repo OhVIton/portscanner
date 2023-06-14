@@ -30,7 +30,7 @@ class PortDict(BaseModel):
     udp: list
 
 
-@app.post("/scan")
+@app.get("/scan")
 def scan_ports(request: Request, ip: str, ports: PortDict = None):
     """
     ports:
@@ -60,19 +60,19 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
             ):
                 open_ports[idx]["screenshot_path"] = img_uuid
         """
-        img_fnames = [uuid.uuid4() for _ in range(len(open_ports))]
+        img_uuids = [uuid.uuid4() for _ in range(len(open_ports))]
         has_capture = {
             k: v.result()
             for k, v in url2img.url2img(
-                [f"{ip}:{p['@portid']}" for p in open_ports], img_fnames
+                [f"{ip}:{p['@portid']}" for p in open_ports], img_uuids
             ).items()
         }
 
-        for i, img_fname in enumerate(img_fnames):
-            if has_capture[img_fname]:
+        for i, img_uuid in enumerate(img_uuids):
+            if has_capture[img_uuid]:
                 open_ports[i][
-                    "screenshot_path"
-                ] = f"{SCREENSHOT_SAVE_PATH}/{img_fname}.png"
+                    "screenshot_uuid"
+                ] = img_uuid
 
         logging.info(
             f"{datetime.datetime.now()}[main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
@@ -81,3 +81,9 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
     except Exception as e:
         logging.error(f"{datetime.datetime.now()}[main:scan_ports] {e}")
         return []
+
+
+@app.get("/getimg")
+def getimg(path: str):
+    pass
+
