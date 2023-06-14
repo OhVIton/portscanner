@@ -85,10 +85,13 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
 
 
 @app.get("/getimg")
-def getimg(img_uuid: str):
+def getimg(request: Request, img_uuid: str):
+    logging.info(f"{datetime.datetime.now()}[main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
     img_path = f"{SCREENSHOT_SAVE_PATH}/{img_uuid}.png"
     if not os.path.exists(img_path):
+        logging.warning(f"{datetime.datetime.now()}[main:getimg] {img_uuid} was not found")
         return None
     response = FileResponse(img_path, filename=f"{img_uuid}.png")
+    logging.info(f"{datetime.datetime.now()}[main:getimg] Send {img_uuid}.png")
     return response
 
