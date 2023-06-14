@@ -13,11 +13,12 @@ from concurrent.futures import ThreadPoolExecutor
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
-today = datetime.date.today()
+now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
-logging.basicConfig(filename=f"{LOG_PATH}/{today}.log", level=logging.INFO)
+os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)
+os.makedirs(LOG_PATH, exist_ok=True)
+logging.basicConfig(filename=f"{LOG_PATH}/{now}.log", level=logging.INFO)
 
 
 options = webdriver.ChromeOptions()
