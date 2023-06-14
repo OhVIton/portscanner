@@ -11,9 +11,9 @@ import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
+if not os.environ.get("LOG_PATH") or not os.environ.get("SCREENSHOT_SAVE_PATH"):
+    from dotenv import load_dotenv
+    load_dotenv()
 SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
 os.makedirs(SCREENSHOT_SAVE_PATH, exist_ok=True)

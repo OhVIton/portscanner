@@ -57,8 +57,15 @@ def _url2img(url, fname):
         driver.get(query_url)
         driver.execute_script("document.body.style.zoom= '50%';")
 
-        logger.info(f"{datetime.datetime.now()} [url2img] waiting 10 seconds....")
-        time.sleep(10)
+        wait_time = 10
+        try:
+            if os.environ.get("SCREENSHOT_WAIT_TIME"):
+                wait_time = int(os.environ.get("SCREENSHOT_WAIT_TIME"))
+        except ValueError:
+            pass
+
+        logger.info(f"{datetime.datetime.now()} [url2img] waiting {wait_time} seconds....")
+        time.sleep(wait_time)
         # if the page is blank, return false
         if (
             driver.page_source

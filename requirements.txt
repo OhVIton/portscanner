@@ -2,5 +2,6 @@ xmltodict
 python-dotenv
 fastapi
 uvicorn
+gunicorn
 selenium
 chromedriver_binary
