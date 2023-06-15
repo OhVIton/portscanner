@@ -103,7 +103,7 @@ def getimg(request: Request, img_uuid: str):
     if not img_path.exists():
         logger.warning(f"[main:getimg] {img_uuid}.png was not found")
         return None
-    elif img_path.parent != save_folder:
+    if img_path.parent != save_folder:
         logger.warning(f"[main:getimg] {img_uuid}.png's parent folder doesn't match.")
         return None
 
