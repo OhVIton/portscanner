@@ -14,7 +14,7 @@ gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0
 - `/scan`
 
 ```
-GET http://(ip):(port)/scan?ip=(ip)
+GET http://(server_ip):(port)/scan?ip=(scan_ip)
 ```
 
 戻り値
