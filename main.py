@@ -11,6 +11,7 @@ import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 import os
+from pathlib import Path
 if not os.environ.get("LOG_PATH") or not os.environ.get("SCREENSHOT_SAVE_PATH"):
     from dotenv import load_dotenv
     load_dotenv()
@@ -24,6 +25,8 @@ logger.setLevel("INFO")
 
 now = datetime.datetime.now().strftime("%Y-%m-%d.%H-%M-%S-%f")
 fh = logging.FileHandler(f"{LOG_PATH}/{now}.log")
+fmt = logging.Formatter("%(asctime)s %(levelname)s\t%(message)s")
+fh.setFormatter(fmt)
 
 logger.addHandler(fh)
 
@@ -54,7 +57,7 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
     """
     try:
         logger.info(
-            f"{datetime.datetime.now()} [main:scan_ports] Received a scan request from {request.client.host} to {ip}:{(str(dict(ports))) if ports else ''}"
+            f"[main:scan_ports] Received a scan request from {request.client.host} to {ip}:{(str(dict(ports))) if ports else ''}"
         )
         if ports:
             open_ports = portscanner.scan_ports(ip, dict(ports))
@@ -84,22 +87,28 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
                 ] = img_uuid
 
         logger.info(
-            f"{datetime.datetime.now()} [main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
+            f"[main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
         )
         return open_ports
     except Exception as e:
-        logger.error(f"{datetime.datetime.now()} [main:scan_ports] {e}")
+        logger.error(f"[main:scan_ports] {e}")
         return []
 
 
 @app.get("/getimg")
 def getimg(request: Request, img_uuid: str):
-    logger.info(f"{datetime.datetime.now()} [main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
-    img_path = f"{SCREENSHOT_SAVE_PATH}/{img_uuid}.png"
-    if not os.path.exists(img_path):
-        logger.warning(f"{datetime.datetime.now()} [main:getimg] {img_uuid} was not found")
+    logger.info(f"[main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
+    save_folder = Path(SCREENSHOT_SAVE_PATH)
+    img_path = save_folder / f"{img_uuid}.png"
+    if not img_path.exists():
+        logger.warning(f"[main:getimg] {img_uuid}.png was not found")
         return None
+    elif img_path.parent != save_folder:
+        logger.warning(f"[main:getimg] {img_uuid}.png's parent folder doesn't match.")
+        return None
+
+    
     response = FileResponse(img_path, filename=f"{img_uuid}.png")
-    logger.info(f"{datetime.datetime.now()} [main:getimg] Send {img_uuid}.png")
+    logger.info(f"[main:getimg] Send {img_uuid}.png")
     return response
 

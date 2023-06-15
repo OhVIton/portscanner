@@ -15,7 +15,6 @@ SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
 
 logger = logging.getLogger("portscanner")
-logger.setLevel("INFO")
 
 
 
@@ -53,9 +52,9 @@ def scan_ports(
     },
 ):
     try:
-        logger.info(f"{datetime.datetime.now()} [portscanner] start a portscan to {ip}")
+        logger.info(f"[portscanner] start a portscan to {ip}")
         logger.debug(
-            f"{datetime.datetime.now()} [portscanner] Scan will be held at {ports}"
+            f"[portscanner] Scan will be held at {ports}"
         )
         sr = _nmap([ip], ports)
         # openなポートのみ取り出す
@@ -66,14 +65,14 @@ def scan_ports(
         ]
 
         logger.info(
-            f"{datetime.datetime.now()} [portscanner] {ip} has open ports {str(sr_ports)}"
+            f"[portscanner] {ip} has open ports {str(sr_ports)}"
         )
 
         return sr_ports
 
     except KeyError as ke:
         logger.info(
-            f"{datetime.datetime.now()} [portscanner] {ip} has no open ports available"
+            f"[portscanner] {ip} has no open ports available"
         )
         return []
 

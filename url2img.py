@@ -20,7 +20,6 @@ SCREENSHOT_SAVE_PATH = os.environ.get("SCREENSHOT_SAVE_PATH")
 LOG_PATH = os.environ.get("LOG_PATH")
 
 logger = logging.getLogger("portscanner")
-logger.setLevel("INFO")
 
 
 options = webdriver.ChromeOptions()
@@ -44,16 +43,16 @@ def _url2img(url, fname):
     driver = webdriver.Chrome(options=options)
     driver.set_window_size(720, 480)
     logger.debug(
-        f"{datetime.datetime.now()} [url2img] started chrome webdriver with options: {options}"
+        f"[url2img] started chrome webdriver with options: {options}"
     )
     try:
         if not url.startswith("http") and not url.startswith("https"):
-            logger.info(f"{datetime.datetime.now()} [url2img] complement url")
+            logger.info(f"[url2img] complement url")
             query_url = "http://" + url
         else:
             query_url = url
 
-        logger.info(f"{datetime.datetime.now()} [url2img] GET {query_url}")
+        logger.info(f"[url2img] GET {query_url}")
         driver.get(query_url)
         driver.execute_script("document.body.style.zoom= '50%';")
 
@@ -64,7 +63,7 @@ def _url2img(url, fname):
         except ValueError:
             pass
 
-        logger.info(f"{datetime.datetime.now()} [url2img] waiting {wait_time} seconds....")
+        logger.info(f"[url2img] waiting {wait_time} seconds....")
         time.sleep(wait_time)
         # if the page is blank, return false
         if (
@@ -72,27 +71,27 @@ def _url2img(url, fname):
             == '<html><head></head><body style="zoom: 50%;"></body></html>'
         ):
             logger.info(
-                f"{datetime.datetime.now()} [url2img] {query_url} was a blank page. skipped."
+                f"[url2img] {query_url} was a blank page. skipped."
             )
             return False
         savepath = f"{SCREENSHOT_SAVE_PATH}/{fname}.png"
         logger.info(
-            f"{datetime.datetime.now()} [url2img] save the screenshot of {query_url} as {savepath}"
+            f"[url2img] save the screenshot of {query_url} as {savepath}"
         )
         driver.save_screenshot(savepath)
         return True
     except InvalidArgumentException as iae:
         # print("\n\033[31m URL may be incorrect\033[0m")
-        logger.error(f"{datetime.datetime.now()} [url2img] URL may be incorrect.")
+        logger.error(f"[url2img] URL may be incorrect.")
         return False
     except WebDriverException as wde:
         # print("\n\033[31m URL doesn't have any web interface \033[0m")
         logger.info(
-            f"{datetime.datetime.now()} [url2img] {url} doesn't have any web interface."
+            f"[url2img] {url} doesn't have any web interface."
         )
         return False
     except Exception as e:
-        logger.error(f"{datetime.datetime.now()} [url2img] {e}")
+        logger.error(f"[url2img] {e}")
         return False
 
 
@@ -140,5 +139,5 @@ def url2img(url: Union[str, list], fname: Union[str, list]) -> dict:
                             )
             return futures
         except Exception as e:
-            logger.error(f"{datetime.datetime.now()} [url2img] {e}")
+            logger.error(f"[url2img] {e}")
             return {"": False}
