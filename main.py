@@ -54,7 +54,7 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
     """
     try:
         logger.info(
-            f"{datetime.datetime.now()}[main:scan_ports] Received a scan request from {request.client.host} to {ip}:{(str(dict(ports))) if ports else ''}"
+            f"{datetime.datetime.now()} [main:scan_ports] Received a scan request from {request.client.host} to {ip}:{(str(dict(ports))) if ports else ''}"
         )
         if ports:
             open_ports = portscanner.scan_ports(ip, dict(ports))
@@ -84,22 +84,22 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
                 ] = img_uuid
 
         logger.info(
-            f"{datetime.datetime.now()}[main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
+            f"{datetime.datetime.now()} [main:scan_ports] completed a scan request from {request.client.host} to {ip}:{':' + str(ports) if ports else ''}"
         )
         return open_ports
     except Exception as e:
-        logger.error(f"{datetime.datetime.now()}[main:scan_ports] {e}")
+        logger.error(f"{datetime.datetime.now()} [main:scan_ports] {e}")
         return []
 
 
 @app.get("/getimg")
 def getimg(request: Request, img_uuid: str):
-    logger.info(f"{datetime.datetime.now()}[main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
+    logger.info(f"{datetime.datetime.now()} [main:getimg] Received a getimg request from {request.client.host} to {img_uuid}")
     img_path = f"{SCREENSHOT_SAVE_PATH}/{img_uuid}.png"
     if not os.path.exists(img_path):
-        logger.warning(f"{datetime.datetime.now()}[main:getimg] {img_uuid} was not found")
+        logger.warning(f"{datetime.datetime.now()} [main:getimg] {img_uuid} was not found")
         return None
     response = FileResponse(img_path, filename=f"{img_uuid}.png")
-    logger.info(f"{datetime.datetime.now()}[main:getimg] Send {img_uuid}.png")
+    logger.info(f"{datetime.datetime.now()} [main:getimg] Send {img_uuid}.png")
     return response
 

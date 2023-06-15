@@ -80,10 +80,18 @@ gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0
 
 タイムアウトの恐れがあるので、改善するとは限らない
 
+- スクリーンショット撮影に使う、Chrome の同時起動数を増やす
+
+```bash
+SCREENSHOT_THREADS_NUM=(数: デフォルトは3)
+```
+
+を環境変数に追加
+
 - スクリーンショット撮影時の待機時間を変更
 
 ```bash
-SCREENSHOT_WAIT_TIME=(秒)
+SCREENSHOT_WAIT_TIME=(秒: デフォルトは10)
 ```
 
 を環境変数に追加

@@ -116,20 +116,28 @@ def url2img(url: Union[str, list], fname: Union[str, list]) -> dict:
 
     elif type(url) == list:
         futures = dict()
+
+        max_workers = 3
         try:
-            with ThreadPoolExecutor(max_workers=3) as executor:
-                for t_idx in range(0, len(url), 3):
+            if os.environ.get("SCREENSHOT_THREADS_NUM"):
+                max_workers = int(os.environ.get("SCREENSHOT_THREADS_NUM"))
+                if max_workers <= 0:
+                    max_workers = 3
+        except ValueError:
+            pass
+
+        try:
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                for t_idx in range(0, len(url), max_workers):
                     futures[fname[t_idx]] = executor.submit(
                         _url2img, url[t_idx], fname[t_idx]
                     )
-                    if t_idx + 1 < len(url):
-                        futures[fname[t_idx + 1]] = executor.submit(
-                            _url2img, url[t_idx + 1], fname[t_idx + 1]
-                        )
-                    if t_idx + 2 < len(url):
-                        futures[fname[t_idx + 2]] = executor.submit(
-                            _url2img, url[t_idx + 2], fname[t_idx + 2]
-                        )
+
+                    for m_idx in range(1, max_workers):
+                        if t_idx + m_idx < len(url):
+                            futures[fname[t_idx + m_idx]] = executor.submit(
+                                _url2img, url[t_idx + m_idx], fname[t_idx + m_idx]
+                            )
             return futures
         except Exception as e:
             logger.error(f"{datetime.datetime.now()} [url2img] {e}")
