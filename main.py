@@ -8,8 +8,6 @@ import logging
 
 import datetime
 
-from concurrent.futures import ThreadPoolExecutor
-
 import os
 from pathlib import Path
 if not os.environ.get("LOG_PATH") or not os.environ.get("SCREENSHOT_SAVE_PATH"):
