@@ -54,15 +54,12 @@ GET http://(ip):(port)/getimg?img_uuid=(screenshot_uuid)
 pip3 install -r requirements.txt
 ```
 
-環境変数に
+環境変数に以下を登録(.env ファイルでも可。どちらかが登録されていない場合は.env ファイルを読み込む)
 
 ```bash
 SCREENSHOT_SAVE_PATH="(スクリーンショット保存先)"
 LOG_PATH="(ログ保存先)"
 ```
-
-を登録  
-どちらかが登録されていない場合は.env ファイルを読み込む
 
 ## チューニング
 
@@ -73,25 +70,22 @@ ulimit -n 4096
 ```
 
 - gunicorn の worker を増やす
+  タイムアウトの恐れがあるので、改善するとは限らない
 
 ```bash
 gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0
 ```
 
-タイムアウトの恐れがあるので、改善するとは限らない
-
 - スクリーンショット撮影に使う、Chrome の同時起動数を増やす
+  環境変数に以下を追加
 
 ```bash
 SCREENSHOT_THREADS_NUM=(数: デフォルトは3)
 ```
 
-を環境変数に追加
-
 - スクリーンショット撮影時の待機時間を変更
+  環境変数に以下を追加
 
 ```bash
 SCREENSHOT_WAIT_TIME=(秒: デフォルトは10)
 ```
-
-を環境変数に追加
