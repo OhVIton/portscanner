@@ -4,6 +4,7 @@ from selenium.common.exceptions import InvalidArgumentException, WebDriverExcept
 import time
 
 import logging
+import datetime
 
 from typing import Union
 
