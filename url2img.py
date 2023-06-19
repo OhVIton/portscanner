@@ -1,10 +1,12 @@
 from selenium import webdriver
 import chromedriver_binary
 from selenium.common.exceptions import InvalidArgumentException, WebDriverException
+import requests
+from http.client import BadStatusLine
+from requests.adapters import ProtocolError, ConnectionError
 import time
 
 import logging
-import datetime
 
 from typing import Union
 
@@ -53,33 +55,36 @@ def _url2img(url, fname):
             query_url = url
 
         logger.info(f"[url2img] GET {query_url}")
-        driver.get(query_url)
-        driver.execute_script("document.body.style.zoom= '50%';")
-
-        wait_time = 10
         try:
-            if os.environ.get("SCREENSHOT_WAIT_TIME"):
-                wait_time = int(os.environ.get("SCREENSHOT_WAIT_TIME"))
-        except ValueError:
-            pass
+            # check if the page is accessible
+            res = requests.get(query_url)
+            if res.status_code == 200:
+                driver.get(query_url)
+                driver.execute_script("document.body.style.zoom= '50%';")
 
-        logger.info(f"[url2img] waiting {wait_time} seconds....")
-        time.sleep(wait_time)
-        # if the page is blank, return false
-        if (
-            driver.page_source
-            == '<html><head></head><body style="zoom: 50%;"></body></html>'
-        ):
+                wait_time = 10
+                try:
+                    if os.environ.get("SCREENSHOT_WAIT_TIME"):
+                        wait_time = int(os.environ.get("SCREENSHOT_WAIT_TIME"))
+                except ValueError:
+                    pass
+
+                logger.info(f"[url2img] {query_url} waiting {wait_time} seconds....")
+                time.sleep(wait_time)
+                savepath = f"{SCREENSHOT_SAVE_PATH}/{fname}.png"
+                logger.info(
+                    f"[url2img] save the screenshot of {query_url} as {savepath}"
+                )
+                driver.save_screenshot(savepath)
+                return True
+            else:
+                return False
+        except (BadStatusLine, ProtocolError, ConnectionError) as e:
             logger.info(
-                f"[url2img] {query_url} was a blank page. skipped."
+                f"[url2img] {query_url} can't be connected by {e}. skipped."
             )
             return False
-        savepath = f"{SCREENSHOT_SAVE_PATH}/{fname}.png"
-        logger.info(
-            f"[url2img] save the screenshot of {query_url} as {savepath}"
-        )
-        driver.save_screenshot(savepath)
-        return True
+
     except InvalidArgumentException as iae:
         # print("\n\033[31m URL may be incorrect\033[0m")
         logger.error(f"[url2img] URL may be incorrect.")

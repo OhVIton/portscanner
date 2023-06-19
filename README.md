@@ -8,7 +8,7 @@ Selenium(Chromedriver)のスクリーンショット撮影機能付き
 - サーバーの起動
 
 ```bash
-gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0
+gunicorn main:app -k uvicorn.workers.UvicornWorker
 ```
 
 - `/scan`
@@ -73,7 +73,7 @@ ulimit -n 4096
   タイムアウトの恐れがあるので、改善するとは限らない
 
 ```bash
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0
+gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
 ```
 
 - スクリーンショット撮影に使う、Chrome の同時起動数を増やす
