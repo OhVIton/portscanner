@@ -49,8 +49,13 @@ def _url2img(url, fname):
     )
     try:
         if not url.startswith("http") and not url.startswith("https"):
-            logger.info(f"[url2img] complement url")
-            query_url = "http://" + url
+            if url.endswith(":443"):
+                logger.info(f"[url2img] complement url with https://")
+                query_url = "https://" + url
+            else:
+                logger.info(f"[url2img] complement url http://")
+                query_url = "http://" + url
+
         else:
             query_url = url
 
