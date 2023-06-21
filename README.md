@@ -6,7 +6,7 @@ Selenium(Chromedriver)のスクリーンショット撮影機能付き
 ## 使い方
 
 - サーバーの起動
-
+ワーカー数は増やさないこと！  
 ```bash
 gunicorn main:app -k uvicorn.workers.UvicornWorker
 ```
@@ -69,23 +69,22 @@ LOG_PATH="(ログ保存先)"
 ulimit -n 4096
 ```
 
-- gunicorn の worker を増やす
-  タイムアウトの恐れがあるので、改善するとは限らない
+- gunicorn の thread を増やす
 
 ```bash
-gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
+gunicorn main:app --threads 4 -k uvicorn.workers.UvicornWorker
 ```
 
 - スクリーンショット撮影に使う、Chrome の同時起動数を増やす
-  環境変数に以下を追加
-
+  環境変数に以下を追加  
+  
 ```bash
 SCREENSHOT_THREADS_NUM=(数: デフォルトは3)
 ```
 
 - スクリーンショット撮影時の待機時間を変更
-  環境変数に以下を追加
-
+  環境変数に以下を追加  
+  
 ```bash
 SCREENSHOT_WAIT_TIME=(秒: デフォルトは10)
 ```
