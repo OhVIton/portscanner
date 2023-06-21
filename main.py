@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Request, BackgroundTasks
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 
 import uuid
@@ -37,9 +37,77 @@ import url2img
 app = FastAPI()
 
 
+class ScanJob():
+    ip: str = ""
+    job_uuid = ""
+    is_done: bool = False
+    result: list = []
+
+    def __init__(self, ip, job_uuid):
+        self.ip = ip
+        self.job_uuid = job_uuid
+
+    def __call__(self):
+        jobs[self.job_uuid] = self
+        open_ports = portscanner.scan_ports(self.ip)
+
+        img_uuids = [uuid.uuid4() for _ in range(len(open_ports))]
+        captures = url2img.url2img(
+                [f"{self.ip}:{p['@portid']}" for p in open_ports], img_uuids
+            )
+        has_capture = {
+            k: v.result() for k, v in captures.items()
+        }
+
+        for i, img_uuid in enumerate(img_uuids):
+            if has_capture[img_uuid]:
+                open_ports[i][
+                    "screenshot_uuid"
+                ] = img_uuid
+
+        logger.info(
+            f"[main:scan_ports] completed a scan request to {self.ip}"
+        )
+
+        self.result = open_ports
+        self.is_done = True
+
+    def get_result(self):
+        del jobs[self.job_uuid]
+        return self.result
+jobs = {}
+
 class PortDict(BaseModel):
     tcp: list
     udp: list
+
+import asyncio
+
+@app.get("/register")
+def register(request: Request, ip: str, background_tasks: BackgroundTasks):
+    logger.info(
+        f"[main:register] Received a scan request from {request.client.host} to {ip}"
+    )
+    job_uuid = str(uuid.uuid4())
+    sj = ScanJob(ip, job_uuid)
+    background_tasks.add_task(sj)
+
+    return {"job_uuid" : job_uuid}
+
+@app.get("/get_result")
+def get_result(request: Request, job_uuid: str):
+    sj = jobs.get(job_uuid)
+    if sj:
+        if sj.is_done:
+            logger.info(
+                f"[main:get_result] Received a scan result query of {job_uuid} from {request.client.host}"
+            )
+            return sj.get_result()
+        else:
+            return Response(f'{job_uuid} is now processing', status_code=202)
+    else:
+        return Response(f'{job_uuid} was not found', status_code=404)
+
 
 
 @app.get("/scan")

@@ -3,7 +3,6 @@ from tempfile import NamedTemporaryFile
 import xmltodict
 
 import logging
-import datetime
 
 import os
 from dotenv import load_dotenv
