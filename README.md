@@ -11,14 +11,27 @@ Selenium(Chromedriver)のスクリーンショット撮影機能付き
 gunicorn main:app -k uvicorn.workers.UvicornWorker
 ```
 
-- `/scan`
-
+- `/register`
+  
 ```
-GET http://(server_ip):(port)/scan?ip=(scan_ip)
+GET http://(server_ip):(port)/register?ip=(scan_ip)
 ```
-
+  
 戻り値
-
+```json
+  {"job_uuid": job_uuid}
+```
+  
+- `/get_result`
+  
+```
+GET http://(server_ip):(port)/get_result?job_uuid=(scan_ip)
+```
+  
+戻り値
+  
+取得成功時  
+status_code = 404
 ```
 [
     {
@@ -37,6 +50,18 @@ GET http://(server_ip):(port)/scan?ip=(scan_ip)
         "screenshot_uuid": "88fdbf9e-c0f0-4140-bc59-2b7a03a81f76"
     }...
 ]
+```
+  
+処理中  
+status_code = 202  
+```
+{job_uuid} is now processing
+```  
+  
+job_uuidがない  
+status_code = 404  
+```
+{job_uuid} was not found
 ```
 
 - `/getimg`
