@@ -25,13 +25,13 @@ GET http://(server_ip):(port)/register?ip=(scan_ip)
 - `/get_result`
   
 ```
-GET http://(server_ip):(port)/get_result?job_uuid=(scan_ip)
+GET http://(server_ip):(port)/get_result?job_uuid=(job_uuid)
 ```
   
 戻り値
   
 取得成功時  
-status_code = 404
+status_code = 200
 ```
 [
     {
