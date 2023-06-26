@@ -28,6 +28,8 @@ def scan_ports(
             "443", # https
             "445", # smb
             "1723", # pptp
+            "2375", # docker rest api
+            "2376", # docker rest api
             "3389", # rdp
             "5431", # UPnP
             "5555", # adb
