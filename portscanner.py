@@ -78,6 +78,7 @@ def scan_ports(
             logger.info(
                 f"[portscanner] {ip} has no open ports available"
             )
+            return []
 
     except KeyError as ke:
         logger.info(
