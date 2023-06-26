@@ -68,11 +68,16 @@ def scan_ports(
             if p["state"]["@state"] == "open"
         ]
 
-        logger.info(
-            f"[portscanner] {ip} has open ports {str(sr_ports)}"
-        )
+        if len(sr_ports):
+            logger.info(
+                f"[portscanner] {ip} has open ports {str(sr_ports)}"
+            )
 
-        return sr_ports
+            return sr_ports
+        else:
+            logger.info(
+                f"[portscanner] {ip} has no open ports available"
+            )
 
     except KeyError as ke:
         logger.info(
