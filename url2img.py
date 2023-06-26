@@ -43,7 +43,7 @@ options.page_load_strategy = "eager"
 
 def _url2img(url, fname):
     driver = webdriver.Chrome(options=options)
-    driver.set_window_size(720, 480)
+    driver.set_window_size(1440, 960)
     logger.debug(
         f"[url2img] started chrome webdriver with options: {options}"
     )
@@ -65,7 +65,7 @@ def _url2img(url, fname):
             res = requests.get(query_url)
             if res.status_code == 200:
                 driver.get(query_url)
-                driver.execute_script("document.body.style.zoom= '50%';")
+                # driver.execute_script("document.body.style.zoom= '50%';")
 
                 wait_time = 10
                 try:
