@@ -1,6 +1,7 @@
 from selenium import webdriver
 import chromedriver_binary
 from selenium.common.exceptions import InvalidArgumentException, WebDriverException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import requests
 from http.client import BadStatusLine
 from requests.adapters import ProtocolError, ConnectionError
@@ -39,10 +40,12 @@ options.add_argument(
     "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
 )
 options.page_load_strategy = "eager"
+capabilities = DesiredCapabilities.CHROME.copy()
+capabilities['acceptInsecureCerts'] = True
 
 
 def _url2img(url, fname):
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, desired_capabilities=capabilities)
     driver.set_window_size(1440, 960)
     logger.debug(
         f"[url2img] started chrome webdriver with options: {options}"
@@ -62,7 +65,7 @@ def _url2img(url, fname):
         logger.info(f"[url2img] GET {query_url}")
         try:
             # check if the page is accessible
-            res = requests.get(query_url)
+            res = requests.get(query_url, verify=False)
             if res.status_code == 200:
                 driver.get(query_url)
                 # driver.execute_script("document.body.style.zoom= '50%';")
