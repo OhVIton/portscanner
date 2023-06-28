@@ -4,7 +4,7 @@ from selenium.common.exceptions import InvalidArgumentException, WebDriverExcept
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import requests
 from http.client import BadStatusLine
-from requests.adapters import ProtocolError, ConnectionError
+from requests.adapters import ProtocolError, ConnectionError, SSLError
 import time
 
 import logging
@@ -40,12 +40,11 @@ options.add_argument(
     "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
 )
 options.page_load_strategy = "eager"
-capabilities = DesiredCapabilities.CHROME.copy()
-capabilities['acceptInsecureCerts'] = True
+options.set_capability("acceptInsecureCerts", True)
 
 
 def _url2img(url, fname):
-    driver = webdriver.Chrome(options=options, desired_capabilities=capabilities)
+    driver = webdriver.Chrome(options=options)
     driver.set_window_size(1440, 960)
     logger.debug(
         f"[url2img] started chrome webdriver with options: {options}"
@@ -65,8 +64,8 @@ def _url2img(url, fname):
         logger.info(f"[url2img] GET {query_url}")
         try:
             # check if the page is accessible
-            res = requests.get(query_url, verify=False)
-            if res.status_code == 200:
+            res = requests.get(query_url, verify=False, timeout=10)
+            if res.text:
                 driver.get(query_url)
                 # driver.execute_script("document.body.style.zoom= '50%';")
 
@@ -87,11 +86,17 @@ def _url2img(url, fname):
                 return True
             else:
                 return False
-        except (BadStatusLine, ProtocolError, ConnectionError) as e:
+        except (BadStatusLine, ProtocolError, ConnectionError, SSLError) as e:
             logger.info(
                 f"[url2img] {query_url} can't be connected by {e}. skipped."
             )
             return False
+        except Exception as e:
+            logger.info(
+                f"[url2img] {query_url} exception {e}. skipped."
+            )
+            return False
+
 
     except InvalidArgumentException as iae:
         # print("\n\033[31m URL may be incorrect\033[0m")
