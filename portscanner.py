@@ -26,6 +26,7 @@ def scan_ports(
             "23", # telnet
             "80", # http-alt
             "81", # http
+            "135", # rpc
             "443", # https
             "445", # smb
             "1723", # pptp
@@ -44,12 +45,15 @@ def scan_ports(
             "10000", # http-alt
             "10001", # http-alt
             "49152", # http-alt
+            "50000", # http-alt
             "52869", # UPnP
         ],
         "udp": [
             "19", # chargen
             "53", # dns
             "123", # ntp
+            "161", # snmp
+            "162", # snmp
             "500", # ipsec
             "1701", # l2tp
             "1900", # ssdp
