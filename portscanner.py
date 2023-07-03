@@ -115,7 +115,7 @@ def _nmap(iplist, portdict) -> dict:
         ipf.flush()
 
         subprocess.run(
-            ["nmap","-A", "-p", _portargs(portdict), "-i", ipf.name, "-oX", xmlf.name],
+            ["nmap","-sV","-p", _portargs(portdict), "-i", ipf.name, "-oX", xmlf.name],
             capture_output=True,
             text=True,
         )
