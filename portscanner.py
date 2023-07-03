@@ -23,6 +23,7 @@ def scan_ports(
         "tcp": [
             "21", # ftp
             "22", # ssh
+            "23", # telnet
             "80", # http-alt
             "81", # http
             "443", # https
@@ -36,7 +37,12 @@ def scan_ports(
             "6379", # redis
             "8000", # http-alt
             "8080", # http-alt
+            "8081", # http-alt
+            "8082", # http-alt
+            "8443", # http-alt
             "8888", # http-alt
+            "10000", # http-alt
+            "10001", # http-alt
             "49152", # http-alt
             "52869", # UPnP
         ],
