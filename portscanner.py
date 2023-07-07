@@ -24,14 +24,25 @@ def scan_ports(
             "21", # ftp
             "22", # ssh
             "23", # telnet
+            "25", # smtp
             "80", # http-alt
             "81", # http
+            "110", # pop3
             "135", # rpc
+            "137", # netbios-ns 
+            "138", # netbios-dgm
+            "139", # netbios-ssn
             "443", # https
             "445", # smb
+            "465", # smtp
+            "515", # lpr
+            "587", # smtp
+            "631", # ipp
+            "995", # pop3
             "1723", # pptp
             "2375", # docker rest api
             "2376", # docker rest api
+            "2525", # smtp
             "3389", # rdp
             "5431", # UPnP
             "5555", # adb
@@ -52,6 +63,8 @@ def scan_ports(
             "19", # chargen
             "53", # dns
             "123", # ntp
+            "137", # netbios-ns 
+            "138", # netbios-dgm
             "161", # snmp
             "162", # snmp
             "500", # ipsec
