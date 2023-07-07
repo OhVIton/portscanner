@@ -39,10 +39,14 @@ def scan_ports(
             "587", # smtp
             "631", # ipp
             "995", # pop3
+            "1433", # microsoft sql
             "1723", # pptp
+            "2222", # directadmin default
             "2375", # docker rest api
             "2376", # docker rest api
             "2525", # smtp
+            "3128", # http-proxy
+            "3306", # mysql
             "3389", # rdp
             "5431", # UPnP
             "5555", # adb
@@ -51,10 +55,13 @@ def scan_ports(
             "8080", # http-alt
             "8081", # http-alt
             "8082", # http-alt
+            "8088", # http-alt
+            "8090", # http-alt
             "8443", # http-alt
             "8888", # http-alt
             "10000", # http-alt
             "10001", # http-alt
+            "37215", # huawei router
             "49152", # http-alt
             "50000", # http-alt
             "52869", # UPnP
@@ -71,6 +78,7 @@ def scan_ports(
             "1701", # l2tp
             "1900", # ssdp
             "5000", # UPnP
+            "5060", # sip
             "5350", #  nat-pmp
             "5351", # nat-pmp
             "5353", # dns
