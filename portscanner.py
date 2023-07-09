@@ -93,11 +93,17 @@ def scan_ports(
         )
         sr = _nmap([ip], ports)
         # openなポートのみ取り出す
-        sr_ports = [
-            p
-            for p in sr["nmaprun"]["host"]["ports"]["port"]
-            if p["state"]["@state"] == "open"
-        ]
+        
+        
+        sr_ports = []
+        if type(sr["nmaprun"]["host"]["ports"]["port"]) == list:
+            sr_ports = [
+                p
+                for p in sr["nmaprun"]["host"]["ports"]["port"]
+                if p["state"]["@state"] == "open"
+            ]
+        elif type(sr["nmaprun"]["host"]["ports"]["port"]) == dict and sr["nmaprun"]["host"]["ports"]["port"]["state"]["@state"] == "open":
+            sr_ports = [sr["nmaprun"]["host"]["ports"]["port"]]
 
         if len(sr_ports):
             logger.info(
