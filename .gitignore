@@ -179,3 +179,4 @@ pyrightconfig.json
 log/
 screenshots/
 ondemand/
+.DS_Store

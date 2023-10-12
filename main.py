@@ -51,7 +51,7 @@ class ScanJob():
 
         img_uuids = [uuid.uuid4() for _ in range(len(open_ports))]
         captures = url2img.url2img(
-                [f"{self.ip}:{p['@portid']}" for p in open_ports], img_uuids
+                [f"{'https' if 'service' in p and '@tunnel' in p['service'] and p['service']['@tunnel'] == 'ssl' else 'http'}://{self.ip}:{p['@portid']}" for p in open_ports], img_uuids
             )
         has_capture = {
             k: v.result() for k, v in captures.items()
@@ -140,7 +140,7 @@ def scan_ports(request: Request, ip: str, ports: PortDict = None):
         has_capture = {
             k: v.result()
             for k, v in url2img.url2img(
-                [f"{ip}:{p['@portid']}" for p in open_ports], img_uuids
+                [f"{'https' if 'service' in p and '@tunnel' in p['service'] and p['service']['@tunnel'] == 'ssl' else 'http'}://{ip}:{p['@portid']}" for p in open_ports], img_uuids
             ).items()
         }
 
